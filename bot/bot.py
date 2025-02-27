@@ -61,27 +61,6 @@ def help_command(update: Update, context: CallbackContext):
         "3. Если цифра не распознана, попробуй отправить более четкое изображение."
     )
 
-# def handle_image(update: Update, context: CallbackContext):
-#     # Скачиваем изображение
-#     photo_file = update.message.photo[-1].get_file()
-#     file_path = "temp_digit.jpg"
-#     photo_file.download(file_path)
-#
-#     # Открываем, приводим к 28x28, grayscale
-#     img = Image.open(file_path).convert('L').resize((28, 28))
-#     arr = np.array(img, dtype=np.float32) / 255.0
-#     arr = arr.reshape((1, -1))  # (1, 784)
-#
-#     # Прогон через сеть
-#     pred = forward(arr, params)
-#     digit = np.argmax(pred, axis=1)[0]
-#
-#     # Удаляем временное изображение
-#     os.remove(file_path)
-#
-#     # Отправляем ответ
-#     update.message.reply_text(f"Кажется, это цифра: {digit}")
-
 def handle_image(update: Update, context: CallbackContext):
     photo_file = update.message.photo[-1].get_file()
     file_path = "temp_digit.jpg"
@@ -109,14 +88,6 @@ def handle_image(update: Update, context: CallbackContext):
     pred = forward(arr, params)            # pred.shape -> (1, 10)
     pred = pred[0]                         # теперь (10, )
     digit = np.argmax(pred)                # индекс с максимальной вероятностью
-    confidence = pred[digit]               # вероятность «лучшего класса»
-
-    # 5. Порог, ниже которого считаем, что цифры нет
-    # threshold = 0.6  # Подберите эмпирически
-    # if confidence < threshold:
-    #     update.message.reply_text("Не похоже, что на изображении есть цифра.")
-    # else:
-    #     update.message.reply_text(f"Кажется, это цифра: {digit} (уверенность {confidence:.2f})")
 
     update.message.reply_text(f"Кажется, это цифра: {digit}")
     os.remove(file_path)
